@@ -18,9 +18,7 @@ RUN apk add --no-cache \
     pip3 install --upgrade pip setuptools && \
     pip3 install -r /tmp/requirements.txt && \
     rm /etc/nginx/conf.d/default.conf && \
-    rm -r /root/.cache && \
-    mkdir -p app/JSON && \
-    chmod 777 app/JSON
+    rm -r /root/.cache
 
 COPY nginx.conf /etc/nginx/
 COPY flask-site-nginx.conf /etc/nginx/conf.d/
