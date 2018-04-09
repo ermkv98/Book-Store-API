@@ -40,7 +40,7 @@ def add_book():
     return response
 
 
-@book.route('/DeleteBook', methods=['Delete'])
+@book.route('/DeleteBook', methods=['DELETE'])
 def delete_book():
     book_data = request.get_json()
     schema = ShortBookSchema()
@@ -49,7 +49,6 @@ def delete_book():
         return jsonify(result.errors)
     book = Book.query.filter_by(ISBN_code=book_data['ISBN_code']).first()
     if book:
-
         response = jsonify({'deleted': 'successfully deleted'}), 200
         db.session.delete(book)
         db.session.commit()
@@ -67,17 +66,20 @@ def get_all():
         return jsonify(result.errors)
     books = Book.query.all()
     if book_data:
-        if book_data['category']:
-            if 'price_min' in book_data:
-                price_min = book_data['price_min']
-            else:
-                price_min = MIN_BOOK_PRICE
-            if 'price_max' in book_data:
-                price_max = book_data['price_max']
-            else:
-                price_max = maxint
+        if 'price_min' in book_data:
+            price_min = book_data['price_min']
+        else:
+            price_min = MIN_BOOK_PRICE
+        if 'price_max' in book_data:
+            price_max = book_data['price_max']
+        else:
+            price_max = maxint
+        if 'category' in book_data:
             books = Book.query.filter_by(category=book_data['category']). \
                 filter(Book.price >= price_min). \
+                filter(Book.price <= price_max)
+        else:
+            books = Book.query.filter(Book.price >= price_min). \
                 filter(Book.price <= price_max)
     schema = FullBookSchema(many=True)
     if books:
