@@ -29,7 +29,7 @@ COPY uwsgi.ini /etc/uwsgi/
 # Custom Supervisord config
 COPY supervisord.conf /etc/supervisord.conf
 
-COPY ./app /app
-WORKDIR /app
+COPY ./Bookstore /Bookstore
+WORKDIR /Bookstore
 
 CMD ["/usr/bin/supervisord"]

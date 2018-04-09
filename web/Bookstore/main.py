@@ -1,5 +1,5 @@
 from flask import Flask
-from .consts import *
+from consts import *
 
 app = Flask(__name__)
 
