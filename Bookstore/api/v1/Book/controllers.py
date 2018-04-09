@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify, request
 from .models import Book, db
-from .validators import FullBookSchema, ShortBookSchema
+from sys import maxint
+from .validators import FullBookSchema, ShortBookSchema, FilterSchema
+from .consts import MIN_BOOK_PRICE
 
 book = Blueprint('Book', __name__)
 
@@ -32,7 +34,6 @@ def add_book():
     if result.errors:
         return jsonify(result.errors)
     book = Book(book_data)
-    book.add_categories(book_data['categories'])
     db.session.add(book)
     db.session.commit()
     response = jsonify({'created': schema.dump(book)}), 201
@@ -52,6 +53,36 @@ def delete_book():
         response = jsonify({'deleted': 'successfully deleted'}), 200
         db.session.delete(book)
         db.session.commit()
+    else:
+        response = jsonify({'error': 'not found'}), 404
+    return response
+
+
+@book.route('/GetAllBooks', methods=['GET'])
+def get_all():
+    book_data = request.get_json()
+    schema = FilterSchema()
+    result = schema.load(book_data)
+    if result.errors:
+        return jsonify(result.errors)
+    books = Book.query.all()
+    if book_data:
+        if book_data['category']:
+            if 'price_min' in book_data:
+                price_min = book_data['price_min']
+            else:
+                price_min = MIN_BOOK_PRICE
+            if 'price_max' in book_data:
+                price_max = book_data['price_max']
+            else:
+                price_max = maxint
+            books = Book.query.filter_by(category=book_data['category']). \
+                filter(Book.price >= price_min). \
+                filter(Book.price <= price_max)
+    schema = FullBookSchema(many=True)
+    if books:
+        result = schema.dump(books)
+        response = jsonify({'books': result}), 200
     else:
         response = jsonify({'error': 'not found'}), 404
     return response
