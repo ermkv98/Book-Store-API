@@ -1,0 +1,169 @@
+## Найти книгу:
+
+### Для начала выведу список всех книг:
+
+Запрос ```curl 0.0.0.0:5000/Book/GetAllBooks```
+
+Ответ {
+  "books": [
+    [
+      {
+        "ISBN_code": "12-34-567-890", 
+        "category": "art", 
+        "name": "war and peace", 
+        "price": 500.0
+      }, 
+      {
+        "ISBN_code": "73-19-400-890", 
+        "category": "art", 
+        "name": "ivanhoe", 
+        "price": 100.0
+      }, 
+      {
+        "ISBN_code": "67-13-120-990", 
+        "category": "science-popular", 
+        "name": "short story of time", 
+        "price": 1000.0
+      }, 
+      {
+        "ISBN_code": "23-04-100-300", 
+        "category": "business", 
+        "name": "Crushing It!: How Great Entrepreneurs Build Their Business and Influence-and How You Can, Too", 
+        "price": 1000.0
+      }, 
+      {
+        "ISBN_code": "55-44-120-300", 
+        "category": "business", 
+        "name": "Business Adventures", 
+        "price": 1200.0
+      }, 
+      {
+        "ISBN_code": "55-44-120-312", 
+        "category": "business", 
+        "name": "Business for dummies", 
+        "price": 200.0
+      }, 
+      {
+        "ISBN_code": "55-44-120-313", 
+        "category": "business", 
+        "name": "Business for dummies 2", 
+        "price": 450.0
+      }, 
+      {
+        "ISBN_code": "55-44-120-390", 
+        "category": "business", 
+        "name": "Business for dummies 3", 
+        "price": 500.0
+      }
+    ], 
+    {}
+  ]
+}
+
+### Отфильтрую бизнес-книги с ценой до 500 рублей:
+
+Запрос ```curl -H "Content-Type: application/json" -X GET -d '{"category":"business", "price_max":500}' 0.0.0.0:5000/Book/GetAllBooks```
+
+Ответ {
+  "books": [
+    [
+      {
+        "ISBN_code": "55-44-120-312", 
+        "category": "business", 
+        "name": "Business for dummies", 
+        "price": 200.0
+      }, 
+      {
+        "ISBN_code": "55-44-120-313", 
+        "category": "business", 
+        "name": "Business for dummies 2", 
+        "price": 450.0
+      }, 
+      {
+        "ISBN_code": "55-44-120-390", 
+        "category": "business", 
+        "name": "Business for dummies 3", 
+        "price": 500.0
+      }
+    ], 
+    {}
+  ]
+}
+
+### Отфильтрую книги с любыми категориями с ценой от 1000 до 2000 рублей
+
+Запрос ```curl -H "Content-Type: application/json" -X GET -d '{"price_min":1000, "price_max":2000}' 0.0.0.0:5000/Book/GetAllBooks```
+
+Ответ {
+  "books": [
+    [
+      {
+        "ISBN_code": "67-13-120-990", 
+        "category": "science-popular", 
+        "name": "short story of time", 
+        "price": 1000.0
+      }, 
+      {
+        "ISBN_code": "23-04-100-300", 
+        "category": "business", 
+        "name": "Crushing It!: How Great Entrepreneurs Build Their Business and Influence-and How You Can, Too", 
+        "price": 1000.0
+      }, 
+      {
+        "ISBN_code": "55-44-120-300", 
+        "category": "business", 
+        "name": "Business Adventures", 
+        "price": 1200.0
+      }
+    ], 
+    {}
+  ]
+}
+
+## Добавить книгу в заказ 
+
+### Создаю транзакцию из 3 книг 
+
+Запрос ```curl -H "Content-Type: application/json" -X POST -d '{"mail":"test@mail.com", "Books_ISBNs":["55-44-120-300","23-04-100-300","67-13-120-990"]}' 0.0.0.0:5000/Transaction/Create```
+
+Ответ {
+  "Cost": 3200.0, 
+  "ISBNs not found:": "", 
+  "Status": "Success", 
+  "Transaction id": 1
+}
+
+### Получаю транзакцию по выданному id 
+
+Запрос ```curl -H "Content-Type: application/json" -X GET -d '{"id":1}' 0.0.0.0:5000/Transaction/Get```
+
+Ответ {
+  "Transaction found": [
+    {
+      "books": [
+        {
+          "ISBN_code": "55-44-120-300", 
+          "category": "business", 
+          "name": "Business Adventures", 
+          "price": 1200.0
+        }, 
+        {
+          "ISBN_code": "23-04-100-300", 
+          "category": "business", 
+          "name": "Crushing It!: How Great Entrepreneurs Build Their Business and Influence-and How You Can, Too", 
+          "price": 1000.0
+        }, 
+        {
+          "ISBN_code": "67-13-120-990", 
+          "category": "science-popular", 
+          "name": "short story of time", 
+          "price": 1000.0
+        }
+      ], 
+      "cost": 3200.0, 
+      "user_mail": "test@mail.com"
+    }, 
+    {}
+  ]
+}
+
