@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from .models import Book, db
+from ..models import Book, db
 from sys import maxint
 from .validators import FullBookSchema, ShortBookSchema, FilterSchema
 from .consts import MIN_BOOK_PRICE
@@ -40,7 +40,7 @@ def add_book():
     return response
 
 
-@book.route('/DeleteBook', methods=['DELETE'])
+@book.route('/DeleteBook', methods=['Delete'])
 def delete_book():
     book_data = request.get_json()
     schema = ShortBookSchema()
@@ -49,6 +49,7 @@ def delete_book():
         return jsonify(result.errors)
     book = Book.query.filter_by(ISBN_code=book_data['ISBN_code']).first()
     if book:
+
         response = jsonify({'deleted': 'successfully deleted'}), 200
         db.session.delete(book)
         db.session.commit()

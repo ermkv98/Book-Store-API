@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from .models import User, db
+from ..models import User, db
 from .validators import FullUserSchema, ShortUserSchema
 
 user = Blueprint('User', __name__)
